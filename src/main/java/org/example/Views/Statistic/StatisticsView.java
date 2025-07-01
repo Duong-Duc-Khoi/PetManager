@@ -10,8 +10,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Map;
 
 public class StatisticsView extends JFrame {
+    StatisticsController stats = new StatisticsController();
 
     private JLabel lblTotalInvoices, lblTotalRevenue, lblSoldPets, lblAvailablePets;
 
@@ -62,12 +64,14 @@ public class StatisticsView extends JFrame {
     }
 
     private JFreeChart createMonthlyRevenueChart() {
+
+        Map<String, Double> revenueMap = stats.getMonthlyRevenue();
+
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        // Dữ liệu mẫu (thay bằng dữ liệu thực từ DB)
-        dataset.addValue(10_000_000, "Doanh thu", "01/2025");
-        dataset.addValue(20_000_000, "Doanh thu", "02/2025");
-        dataset.addValue(30_000_000, "Doanh thu", "03/2025");
+        for (Map.Entry<String, Double> entry : revenueMap.entrySet()) {
+            dataset.addValue(entry.getValue(), "Doanh thu", entry.getKey());
+        }
 
         return ChartFactory.createBarChart(
                 "Doanh thu theo tháng",
@@ -76,12 +80,12 @@ public class StatisticsView extends JFrame {
                 dataset
         );
     }
+
     private String formatCurrency(double value) {
         return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(value);
     }
 
     private void loadMockData() {
-        StatisticsController stats = new StatisticsController();
 
         lblTotalInvoices.setText("<html><center>Tổng số hóa đơn<br><h2>" + stats.getTotalInvoices() + "</h2></center></html>");
         lblTotalRevenue.setText("<html><center>Tổng doanh thu<br><h2>" + formatCurrency(stats.getTotalRevenue()) + "</h2></center></html>");

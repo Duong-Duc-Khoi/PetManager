@@ -47,15 +47,16 @@ public class HomeView extends JFrame {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        JButton btnPet = createStyledButton("Pet Management", buttonFont, buttonColor, hoverColor);
-        JButton btnRecord = createStyledButton("Health Records", buttonFont, buttonColor, hoverColor);
-        JButton btnSale = createStyledButton("Pet Sales", buttonFont, buttonColor, hoverColor);
-        JButton btnSupplier = createStyledButton("Suppliers", buttonFont, buttonColor, hoverColor);
-        JButton btnAccount = createStyledButton("User Accounts", buttonFont, buttonColor, hoverColor);
-        JButton btnInvoices = createStyledButton("Invoices", buttonFont, buttonColor, hoverColor);
+        JButton btnPet = createStyledButton("Quản Lý Thú Cưng", buttonFont, buttonColor, hoverColor);
+        JButton btnRecord = createStyledButton("Theo Dõi Sức Khỏe", buttonFont, buttonColor, hoverColor);
+        JButton btnSale = createStyledButton("Bán Thú Cưng", buttonFont, buttonColor, hoverColor);
+        JButton btnSupplier = createStyledButton("Nhà Cung Cấp", buttonFont, buttonColor, hoverColor);
+        JButton btnAccount = createStyledButton("Quản Lý Tài Khoản", buttonFont, buttonColor, hoverColor);
+        JButton btnInvoices = createStyledButton("Hóa Đơn", buttonFont, buttonColor, hoverColor);
         JButton btnStatic = createStyledButton("Thống Kê", buttonFont, buttonColor, hoverColor);
-        JButton btnLogout = createStyledButton("Logout", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
-
+        JButton btnLogout = createStyledButton("Đăng Xuất", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
+        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        btnLogout.setForeground(Color.RED);
         buttonPanel.add(btnSale);
         buttonPanel.add(btnInvoices);
         if ("admin".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
