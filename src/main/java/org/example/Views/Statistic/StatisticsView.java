@@ -13,7 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class StatisticsView extends JFrame {
-    StatisticsController stats = new StatisticsController();
+    private ChartPanel chartPanel;
+    private StatisticsController stats = new StatisticsController();
+
 
     private JLabel lblTotalInvoices, lblTotalRevenue, lblSoldPets, lblAvailablePets;
 
@@ -23,7 +25,7 @@ public class StatisticsView extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         initUI();
-        loadMockData(); // Sau này thay bằng controller thực
+        loadStatistics();
 
         setVisible(true);
     }
@@ -48,8 +50,7 @@ public class StatisticsView extends JFrame {
         JPanel panelChart = new JPanel(new BorderLayout());
         panelChart.setBorder(BorderFactory.createTitledBorder("Doanh thu theo tháng"));
 
-        JFreeChart chart = createMonthlyRevenueChart();
-        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel = new ChartPanel(createMonthlyRevenueChart());
         panelChart.add(chartPanel, BorderLayout.CENTER);
 
         add(panelChart, BorderLayout.CENTER);
@@ -64,7 +65,6 @@ public class StatisticsView extends JFrame {
     }
 
     private JFreeChart createMonthlyRevenueChart() {
-
         Map<String, Double> revenueMap = stats.getMonthlyRevenue();
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -85,12 +85,17 @@ public class StatisticsView extends JFrame {
         return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(value);
     }
 
-    private void loadMockData() {
-
+    private void loadStatistics() {
         lblTotalInvoices.setText("<html><center>Tổng số hóa đơn<br><h2>" + stats.getTotalInvoices() + "</h2></center></html>");
         lblTotalRevenue.setText("<html><center>Tổng doanh thu<br><h2>" + formatCurrency(stats.getTotalRevenue()) + "</h2></center></html>");
         lblSoldPets.setText("<html><center>Thú đã bán<br><h2>" + stats.getSoldPets() + "</h2></center></html>");
         lblAvailablePets.setText("<html><center>Thú còn hàng<br><h2>" + stats.getAvailablePets() + "</h2></center></html>");
-
     }
+    public void reload() {
+        loadStatistics();
+        chartPanel.setChart(createMonthlyRevenueChart());
+    }
+
+
+
 }

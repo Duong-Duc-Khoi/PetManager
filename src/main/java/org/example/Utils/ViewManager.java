@@ -42,12 +42,15 @@ public class ViewManager {
     }
     public static void showStatics() {
         UIManagers.applyGlobalFont();
-        if (statisticsView == null ) {
+        if (statisticsView == null) {
             statisticsView = new StatisticsView();
+        } else {
+            statisticsView.reload();
         }
         statisticsView.setVisible(true);
         statisticsView.toFront();
     }
+
 
     public static void showPetView() {
         UIManagers.applyGlobalFont();
