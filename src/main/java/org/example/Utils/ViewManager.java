@@ -34,7 +34,7 @@ public class ViewManager {
 
     public static void showAccountView() {
         UIManagers.applyGlobalFont();
-        if (accountView == null || !accountView.isDisplayable()) {
+        if (accountView == null ) {
             accountView = new AccountView();
         }
         accountView.setVisible(true);
@@ -42,7 +42,7 @@ public class ViewManager {
     }
     public static void showStatics() {
         UIManagers.applyGlobalFont();
-        if (statisticsView == null || statisticsView.isDisplayable()) {
+        if (statisticsView == null ) {
             statisticsView = new StatisticsView();
         }
         statisticsView.setVisible(true);
@@ -51,7 +51,7 @@ public class ViewManager {
 
     public static void showPetView() {
         UIManagers.applyGlobalFont();
-        if (petView == null || !petView.isDisplayable()) {
+        if (petView == null ) {
             petView = new PetView();
         }
         petView.setVisible(true);
@@ -60,7 +60,7 @@ public class ViewManager {
 
     public static void showSupplier() {
         UIManagers.applyGlobalFont();
-        if (supplierView == null || supplierView.isDisplayable()) {
+        if (supplierView == null ) {
             supplierView = new SupplierView();
         }
         supplierView.setVisible(true);
@@ -69,7 +69,7 @@ public class ViewManager {
 
     public static void showPetLog() {
         UIManagers.applyGlobalFont();
-        if (petLogView == null || petLogView.isDisplayable()) {
+        if (petLogView == null ) {
             petLogView = new PetLogView();
         }
         petLogView.setVisible(true);
@@ -78,7 +78,7 @@ public class ViewManager {
 
     public static void showRecordLog() {
         UIManagers.applyGlobalFont();
-        if (recordLogView == null || recordLogView.isDisplayable()) {
+        if (recordLogView == null ) {
             recordLogView = new RecordLogView();
         }
         recordLogView.setVisible(true);
@@ -87,7 +87,7 @@ public class ViewManager {
 
     public static void showPetSale() {
         UIManagers.applyGlobalFont();
-        if (petSaleView == null || petSaleView.isDisplayable()) {
+        if (petSaleView == null ) {
             petSaleView = new PetSaleView();
         }
         petSaleView.setVisible(true);
@@ -96,7 +96,7 @@ public class ViewManager {
 
     public static void showInvoice() {
         UIManagers.applyGlobalFont();
-        if (invoiceView == null || invoiceView.isDisplayable()) {
+        if (invoiceView == null ) {
             invoiceView = new InvoicesView();
         }
         invoiceView.setVisible(true);
