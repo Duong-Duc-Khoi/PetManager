@@ -18,7 +18,7 @@ public class HomeView extends JFrame {
 
     private void initComponents() {
         Font buttonFont = new Font("Segoe UI", Font.PLAIN, 16);
-        Font titleFont = new Font("Segoe UI", Font.BOLD, 28);
+        Font titleFont = new Font("Tahoma", Font.BOLD, 36);
         Font sloganFont = new Font("Segoe UI", Font.ITALIC, 14);
         Color mainColor = new Color(0, 102, 204);
         Color buttonColor = new Color(230, 240, 250);
@@ -28,11 +28,11 @@ public class HomeView extends JFrame {
         headerPanel.setBackground(mainColor);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel titleLabel = new JLabel("PET SHOP 36", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("~ PET SHOP 36 ~", SwingConstants.CENTER);
         titleLabel.setFont(titleFont);
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(Color.YELLOW);
 
-        JLabel sloganLabel = new JLabel("Your trusted pet partner", SwingConstants.CENTER);
+        JLabel sloganLabel = new JLabel("Your trusted pet partner !", SwingConstants.CENTER);
         sloganLabel.setFont(sloganFont);
         sloganLabel.setForeground(Color.WHITE);
 
@@ -73,16 +73,18 @@ public class HomeView extends JFrame {
         imagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         try {
-            String imageUrl = "https://i.pinimg.com/736x/ff/d5/4d/ffd54db4e4efc1de685a949689904834.jpg";
+            String imageUrl = "https://i.pinimg.com/1200x/af/8b/4a/af8b4ae2596c629997277c4bf2cd0235.jpg";
             ImageIcon icon = new ImageIcon(new java.net.URL(imageUrl));
 
-            JLabel imgLabel = new JLabel(icon);
+            ScalableImageLabel imgLabel = new ScalableImageLabel(icon);
             imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
             imgLabel.setVerticalAlignment(SwingConstants.CENTER);
+
             imagePanel.add(imgLabel, BorderLayout.CENTER);
         } catch (Exception e) {
             imagePanel.add(new JLabel("Image failed to load"), BorderLayout.CENTER);
         }
+
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, buttonPanel, imagePanel);
         splitPane.setDividerLocation(380);
@@ -132,4 +134,23 @@ public class HomeView extends JFrame {
         dispose();
         SwingUtilities.invokeLater(() -> new LoginView().setVisible(true));
     }
+
+    //co giãn ảnh
+    private static class ScalableImageLabel extends JLabel {
+        private Image image;
+
+        public ScalableImageLabel(ImageIcon icon) {
+            this.image = icon.getImage();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Vẽ ảnh tự động giãn ra đúng kích thước
+            if (image != null) {
+                g.drawImage(image, 0, 0, getWidth(),getHeight(), this);
+            }
+        }
+    }
+
 }
