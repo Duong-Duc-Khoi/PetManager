@@ -53,6 +53,7 @@ public class HomeView extends JFrame {
         JButton btnSupplier = createStyledButton("Suppliers", buttonFont, buttonColor, hoverColor);
         JButton btnAccount = createStyledButton("User Accounts", buttonFont, buttonColor, hoverColor);
         JButton btnInvoices = createStyledButton("Invoices", buttonFont, buttonColor, hoverColor);
+        JButton btnStatic = createStyledButton("Thống Kê", buttonFont, buttonColor, hoverColor);
         JButton btnLogout = createStyledButton("Logout", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
 
         buttonPanel.add(btnSale);
@@ -60,6 +61,7 @@ public class HomeView extends JFrame {
         if ("admin".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
             buttonPanel.add(btnSupplier);
             buttonPanel.add(btnAccount);
+            buttonPanel.add(btnStatic);
         }
         buttonPanel.add(btnPet);
         buttonPanel.add(btnRecord);
@@ -93,6 +95,7 @@ public class HomeView extends JFrame {
         btnSale.addActionListener(e -> ViewManager.showPetSale());
         btnInvoices.addActionListener(e -> ViewManager.showInvoice());
         btnLogout.addActionListener(e -> logout());
+        btnStatic.addActionListener(e -> ViewManager.showStatics());
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(headerPanel, BorderLayout.NORTH);

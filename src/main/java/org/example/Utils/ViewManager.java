@@ -9,6 +9,7 @@ import org.example.Views.Pet.RecordLogView;
 import org.example.Views.Pet.SupplierView;
 import org.example.Views.Sale.PetSaleView;
 import org.example.Views.Invoices.InvoicesView;
+import org.example.Views.Statistic.StatisticsView;
 
 public class ViewManager {
     private static AccountView accountView;
@@ -20,6 +21,7 @@ public class ViewManager {
     private static RecordLogView recordLogView;
     private static PetSaleView petSaleView;
     private static InvoicesView invoiceView;
+    private static StatisticsView statisticsView;
 
     public static void showRegisterView() {
         UIManagers.applyGlobalFont();
@@ -37,6 +39,14 @@ public class ViewManager {
         }
         accountView.setVisible(true);
         accountView.toFront();
+    }
+    public static void showStatics() {
+        UIManagers.applyGlobalFont();
+        if (statisticsView == null || statisticsView.isDisplayable()) {
+            statisticsView = new StatisticsView();
+        }
+        statisticsView.setVisible(true);
+        statisticsView.toFront();
     }
 
     public static void showPetView() {
