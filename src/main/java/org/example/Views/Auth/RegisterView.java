@@ -13,10 +13,15 @@ public class RegisterView extends JFrame {
     private JButton registerButton;
 
     private AuthController controller;
+    private JFrame loginViewRef;
 
     public RegisterView() {
         controller = new AuthController();
         initUI();
+    }
+    public RegisterView(JFrame loginViewRef) {
+        this();
+        this.loginViewRef = loginViewRef;
     }
 
     private void initUI() {
@@ -45,7 +50,7 @@ public class RegisterView extends JFrame {
         roleLabel.setBounds(20, 100, 80, 25);
         add(roleLabel);
 
-        String[] roles = {"admin"};
+        String[] roles = {"staff"};
         roleComboBox = new JComboBox<>(roles);
         roleComboBox.setBounds(100, 100, 200, 25);
         add(roleComboBox);
@@ -70,7 +75,9 @@ public class RegisterView extends JFrame {
         if (success) {
             JOptionPane.showMessageDialog(this, "Đăng kí thành công !");
             this.dispose();
-            new LoginView().setVisible(true);
+            if (loginViewRef != null) {
+                loginViewRef.setVisible(true);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Lỗi đăng ký! Vui lòng thử lại!");
         }

@@ -1,11 +1,13 @@
 package org.example.Views.Pet;
 
+import org.example.Controllers.PetCategoryController;
 import org.example.Controllers.PetController;
 import org.example.Controllers.SupplierController;
 import org.example.DTO.SupplierItems;
 import org.example.Models.Pet;
 import org.example.Models.Session;
 import org.example.Models.Supplier;
+import org.example.Models.PetCategory;
 import org.example.Utils.ViewManager;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -26,14 +28,15 @@ public class PetView extends JFrame {
     private JTextField idField, nameField, breedField, ageField, priceField, searchField;
     private JTable petTable;
     private JComboBox<String> genderComboBox;
-    private JComboBox<String> speciesComboBox;
+    private JComboBox<PetCategory> speciesComboBox;
     private JComboBox<String> statusComboBox;
     private JComboBox<SupplierItems> supplierComboBox;
-    private JComboBox<String> filterSpeciesComboBox;
+    private JComboBox<PetCategory> filterSpeciesComboBox;
     private JComboBox<SupplierItems> filterSupplierComboBox;
     private DefaultTableModel tableModel;
     private PetController petController;
     private SupplierController supplierController;
+    private PetCategoryController petCategoryController;
     private Map<Integer, String> supplierNameMap = new HashMap<>();
     private Map<Integer, Integer> petIdToSupplierIdMap = new HashMap<>();
     private List<Pet> allPets = new ArrayList<>();
@@ -41,8 +44,10 @@ public class PetView extends JFrame {
     public PetView() {
         this.petController = new PetController();
         this.supplierController = new SupplierController();
+        this.petCategoryController = new PetCategoryController();
         initUI();
         loadSuppliers();
+        loadPetCategories();
         loadData();
     }
 
@@ -93,7 +98,7 @@ public class PetView extends JFrame {
         }}, gbc);
         gbc.gridx = 1;
         gbc.gridy = 1;
-        speciesComboBox = new JComboBox<>(new String[]{"Dog", "Cat"});
+        speciesComboBox = new JComboBox<>();
         speciesComboBox.setPreferredSize(fieldSize);
         speciesComboBox.setFont(fieldFont);
         inputPanel.add(speciesComboBox, gbc);
@@ -179,7 +184,7 @@ public class PetView extends JFrame {
         filterPanel.add(new JLabel("Lọc theo Loài:") {{
             setFont(labelFont);
         }});
-        filterSpeciesComboBox = new JComboBox<>(new String[]{"All", "Dog", "Cat"});
+        filterSpeciesComboBox = new JComboBox<>();
         filterSpeciesComboBox.setPreferredSize(new Dimension(120, 30));
         filterSpeciesComboBox.setFont(fieldFont);
         filterPanel.add(filterSpeciesComboBox);
@@ -245,13 +250,20 @@ public class PetView extends JFrame {
                     int petId = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
                     idField.setText(String.valueOf(petId));
                     nameField.setText(tableModel.getValueAt(row, 1).toString());
-                    speciesComboBox.setSelectedItem(tableModel.getValueAt(row, 2).toString());
+                    // Set speciesComboBox by name
+                    String speciesName = tableModel.getValueAt(row, 2).toString();
+                    for (int i = 0; i < speciesComboBox.getItemCount(); i++) {
+                        PetCategory c = speciesComboBox.getItemAt(i);
+                        if (c.getName().equals(speciesName)) {
+                            speciesComboBox.setSelectedIndex(i);
+                            break;
+                        }
+                    }
                     breedField.setText(tableModel.getValueAt(row, 3).toString());
                     ageField.setText(tableModel.getValueAt(row, 4).toString());
                     genderComboBox.setSelectedItem(tableModel.getValueAt(row, 5).toString());
                     priceField.setText(tableModel.getValueAt(row, 6).toString());
                     statusComboBox.setSelectedItem(tableModel.getValueAt(row, 7).toString());
-
                     int supplierId = petIdToSupplierIdMap.getOrDefault(petId, -1);
                     for (int i = 0; i < supplierComboBox.getItemCount(); i++) {
                         SupplierItems item = supplierComboBox.getItemAt(i);
@@ -360,7 +372,8 @@ public class PetView extends JFrame {
     private Pet getPetFromForm() {
         try {
             String name = nameField.getText();
-            String species = (String) speciesComboBox.getSelectedItem();
+            PetCategory selectedCategory = (PetCategory) speciesComboBox.getSelectedItem();
+            String species = selectedCategory != null ? selectedCategory.getName() : "";
             String gender = (String) genderComboBox.getSelectedItem();
             String breed = breedField.getText();
             int age = Integer.parseInt(ageField.getText());
@@ -405,8 +418,20 @@ public class PetView extends JFrame {
         }
     }
 
+    private void loadPetCategories() {
+        speciesComboBox.removeAllItems();
+        filterSpeciesComboBox.removeAllItems();
+        filterSpeciesComboBox.addItem(new PetCategory(-1, "All", ""));
+        List<PetCategory> categories = petCategoryController.getAllCategories();
+        for (PetCategory c : categories) {
+            speciesComboBox.addItem(c);
+            filterSpeciesComboBox.addItem(c);
+        }
+    }
+
     private void filterData() {
-        String selectedSpecies = (String) filterSpeciesComboBox.getSelectedItem();
+        PetCategory selectedCategory = (PetCategory) filterSpeciesComboBox.getSelectedItem();
+        String selectedSpecies = selectedCategory != null && selectedCategory.getId() != -1 ? selectedCategory.getName() : "All";
         SupplierItems selectedSupplier = (SupplierItems) filterSupplierComboBox.getSelectedItem();
         String searchKeyword = searchField.getText().toLowerCase();
 
@@ -439,6 +464,7 @@ public class PetView extends JFrame {
         priceField.setText("");
         loadData();
         loadSuppliers();
+        loadPetCategories();
         tableModel.fireTableDataChanged();
     }
     private void exportToExcel() {

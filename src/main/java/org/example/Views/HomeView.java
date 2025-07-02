@@ -48,6 +48,7 @@ public class HomeView extends JFrame {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JButton btnPet = createStyledButton("Quản Lý Thú Cưng", buttonFont, buttonColor, hoverColor);
+        JButton btnPetCategory = createStyledButton("Quản Lý Loài Thú Cưng", buttonFont, buttonColor, hoverColor);
         JButton btnRecord = createStyledButton("Theo Dõi Sức Khỏe", buttonFont, buttonColor, hoverColor);
         JButton btnSale = createStyledButton("Bán Thú Cưng", buttonFont, buttonColor, hoverColor);
         JButton btnSupplier = createStyledButton("Nhà Cung Cấp", buttonFont, buttonColor, hoverColor);
@@ -70,6 +71,7 @@ public class HomeView extends JFrame {
             buttonPanel.add(btnStatic);
         }
         buttonPanel.add(btnPet);
+        buttonPanel.add(btnPetCategory);
         buttonPanel.add(btnRecord);
         buttonPanel.add(btnLogout);
         // Chỉ hiển thị nút Đổi Mật Khẩu cho staff
@@ -103,6 +105,7 @@ public class HomeView extends JFrame {
         btnAccount.addActionListener(e -> ViewManager.showAccountView());
         btnSupplier.addActionListener(e -> ViewManager.showSupplier());
         btnPet.addActionListener(e -> ViewManager.showPetView());
+        btnPetCategory.addActionListener(e -> new org.example.Views.Pet.PetCategoryView().setVisible(true));
         btnRecord.addActionListener(e -> ViewManager.showRecordLog());
         btnSale.addActionListener(e -> ViewManager.showPetSale());
         btnInvoices.addActionListener(e -> ViewManager.showInvoice());
