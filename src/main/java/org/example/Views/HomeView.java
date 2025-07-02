@@ -43,9 +43,9 @@ public class HomeView extends JFrame {
 
         headerPanel.add(titleContainer, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(8, 1, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(9, 1, 10, 10));
         buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JButton btnPet = createStyledButton("Quản Lý Thú Cưng", buttonFont, buttonColor, hoverColor);
         JButton btnRecord = createStyledButton("Theo Dõi Sức Khỏe", buttonFont, buttonColor, hoverColor);
