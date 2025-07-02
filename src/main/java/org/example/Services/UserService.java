@@ -86,4 +86,49 @@ public class UserService {
 
         return false;
     }
+
+    public boolean addUser(User user) {
+        String query = "INSERT INTO users (username, password, role, created_at) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getRole());
+            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean exportUsersToExcel(String filePath) {
+        List<User> users = getAllUser();
+        try {
+            // Apache POI
+            org.apache.poi.ss.usermodel.Workbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Users");
+            org.apache.poi.ss.usermodel.Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("ID");
+            header.createCell(1).setCellValue("Username");
+            header.createCell(2).setCellValue("Role");
+            header.createCell(3).setCellValue("Created At");
+            int rowIdx = 1;
+            for (User user : users) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(user.getUserId());
+                row.createCell(1).setCellValue(user.getUsername());
+                row.createCell(2).setCellValue(user.getRole());
+                row.createCell(3).setCellValue(user.getCreatedAt().toString());
+            }
+            java.io.FileOutputStream fos = new java.io.FileOutputStream(filePath);
+            workbook.write(fos);
+            fos.close();
+            workbook.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

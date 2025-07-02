@@ -43,9 +43,9 @@ public class HomeView extends JFrame {
 
         headerPanel.add(titleContainer, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(8, 1, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(9, 1, 10, 10));
         buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JButton btnPet = createStyledButton("Quản Lý Thú Cưng", buttonFont, buttonColor, hoverColor);
         JButton btnRecord = createStyledButton("Theo Dõi Sức Khỏe", buttonFont, buttonColor, hoverColor);
@@ -54,11 +54,16 @@ public class HomeView extends JFrame {
         JButton btnAccount = createStyledButton("Quản Lý Tài Khoản", buttonFont, buttonColor, hoverColor);
         JButton btnInvoices = createStyledButton("Hóa Đơn", buttonFont, buttonColor, hoverColor);
         JButton btnStatic = createStyledButton("Thống Kê", buttonFont, buttonColor, hoverColor);
+        JButton btnFood = createStyledButton("Quản Lý Thức Ăn", buttonFont, buttonColor, hoverColor);
+
         JButton btnLogout = createStyledButton("Đăng Xuất", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
+        JButton btnChangePassword = createStyledButton("Đổi Mật Khẩu", buttonFont, buttonColor, hoverColor);
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btnLogout.setForeground(Color.RED);
         buttonPanel.add(btnSale);
         buttonPanel.add(btnInvoices);
+        buttonPanel.add(btnFood);
+
         if ("admin".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
             buttonPanel.add(btnSupplier);
             buttonPanel.add(btnAccount);
@@ -67,6 +72,10 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnPet);
         buttonPanel.add(btnRecord);
         buttonPanel.add(btnLogout);
+        // Chỉ hiển thị nút Đổi Mật Khẩu cho staff
+        if ("staff".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
+            buttonPanel.add(btnChangePassword);
+        }
 
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setBackground(Color.WHITE);
@@ -99,6 +108,13 @@ public class HomeView extends JFrame {
         btnInvoices.addActionListener(e -> ViewManager.showInvoice());
         btnLogout.addActionListener(e -> logout());
         btnStatic.addActionListener(e -> ViewManager.showStatics());
+        btnFood.addActionListener(e -> ViewManager.showFood());
+        btnChangePassword.addActionListener(e -> {
+            int userId = Session.getInstance().getUser().getUserId();
+            String username = Session.getInstance().getUser().getUsername();
+            new org.example.Views.Auth.ChangePasswordDialog(this, userId, username).setVisible(true);
+        });
+
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(headerPanel, BorderLayout.NORTH);
