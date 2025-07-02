@@ -93,7 +93,8 @@ public class PetView extends JFrame {
         }}, gbc);
         gbc.gridx = 1;
         gbc.gridy = 1;
-        speciesComboBox = new JComboBox<>(new String[]{"Dog", "Cat"});
+        List<String> categories = petController.getAllCategoryNames();
+        speciesComboBox = new JComboBox<>(categories.toArray(new String[0]));
         speciesComboBox.setPreferredSize(fieldSize);
         speciesComboBox.setFont(fieldFont);
         inputPanel.add(speciesComboBox, gbc);
@@ -179,7 +180,7 @@ public class PetView extends JFrame {
         filterPanel.add(new JLabel("Lọc theo Loài:") {{
             setFont(labelFont);
         }});
-        filterSpeciesComboBox = new JComboBox<>(new String[]{"All", "Dog", "Cat"});
+        filterSpeciesComboBox = new JComboBox<>(categories.toArray(new String[0]));
         filterSpeciesComboBox.setPreferredSize(new Dimension(120, 30));
         filterSpeciesComboBox.setFont(fieldFont);
         filterPanel.add(filterSpeciesComboBox);

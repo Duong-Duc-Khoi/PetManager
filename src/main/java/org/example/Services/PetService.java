@@ -13,7 +13,7 @@ import java.util.List;
 public class PetService {
     public List<String> getAllCategoryNames() {
         List<String> names = new ArrayList<>();
-        String sql = "SELECT name FROM pet_categories";
+        String sql = "SELECT name FROM petcategories";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
