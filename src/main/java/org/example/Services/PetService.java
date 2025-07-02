@@ -11,6 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PetService {
+    public List<String> getAllCategoryNames() {
+        List<String> names = new ArrayList<>();
+        String sql = "SELECT name FROM pet_categories";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                names.add(rs.getString("name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // hoặc log
+        }
+
+        return names;
+    }
+
     public List<Pet> getAllPets() {
         List<Pet> pets = new ArrayList<>();
         String sql = "SELECT * FROM pets";

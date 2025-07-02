@@ -36,4 +36,5 @@ public class PetController {
     public List<Pet> getAvailablePets() {
         return petService.getAvailablePets();
     }
+    public List<String> getAllCategoryNames() {return petService.getAllCategoryNames();}
 }

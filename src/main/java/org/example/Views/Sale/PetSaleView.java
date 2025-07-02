@@ -48,7 +48,11 @@ public class PetSaleView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        speciesFilter = new JComboBox<>(new String[]{"Tất cả", "Dog", "Cat"});
+        List<String> categories = petController.getAllCategoryNames();
+
+        categories.add(0, "Tất cả");
+        speciesFilter = new JComboBox<>(categories.toArray(new String[0]));
+
         txtSearch = new JTextField(20);
         JButton btnFilter = new JButton("Lọc");
 

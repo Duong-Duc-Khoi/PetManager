@@ -71,11 +71,12 @@ public class HomeView extends JFrame {
         }
         buttonPanel.add(btnPet);
         buttonPanel.add(btnRecord);
-        buttonPanel.add(btnLogout);
-        // Chỉ hiển thị nút Đổi Mật Khẩu cho staff
         if ("staff".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
             buttonPanel.add(btnChangePassword);
         }
+        buttonPanel.add(btnLogout);
+        // Chỉ hiển thị nút Đổi Mật Khẩu cho staff
+
 
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setBackground(Color.WHITE);
