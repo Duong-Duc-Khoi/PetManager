@@ -45,7 +45,7 @@ public class RegisterView extends JFrame {
         roleLabel.setBounds(20, 100, 80, 25);
         add(roleLabel);
 
-        String[] roles = {"admin", "staff"};
+        String[] roles = {"admin"};
         roleComboBox = new JComboBox<>(roles);
         roleComboBox.setBounds(100, 100, 200, 25);
         add(roleComboBox);

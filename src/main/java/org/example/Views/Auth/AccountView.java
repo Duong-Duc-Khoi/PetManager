@@ -99,10 +99,16 @@ public class AccountView extends JFrame {
         deleteButton.setFont(buttonFont);
         JButton changePasswordButton = new JButton("Đổi mật khẩu");
         changePasswordButton.setFont(buttonFont);
+        JButton addButton = new JButton("Thêm tài khoản");
+        addButton.setFont(buttonFont);
+        JButton exportButton = new JButton("Xuất Excel");
+        exportButton.setFont(buttonFont);
 
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(changePasswordButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(exportButton);
 
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -177,6 +183,53 @@ public class AccountView extends JFrame {
                 int userId = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
                 String username = tableModel.getValueAt(row, 1).toString();
                 new ChangePasswordDialog(this, userId, username).setVisible(true);
+            }
+        });
+
+        addButton.addActionListener(e -> {
+            JTextField usernameField = new JTextField();
+            JPasswordField passwordField = new JPasswordField();
+            JComboBox<String> roleBox = new JComboBox<>(new String[]{"admin", "staff"});
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Tên đăng nhập:"));
+            panel.add(usernameField);
+            panel.add(new JLabel("Mật khẩu:"));
+            panel.add(passwordField);
+            panel.add(new JLabel("Vai trò:"));
+            panel.add(roleBox);
+            int result = JOptionPane.showConfirmDialog(this, panel, "Thêm tài khoản mới", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+                String role = (String) roleBox.getSelectedItem();
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
+                    return;
+                }
+                String hashed = org.mindrot.jbcrypt.BCrypt.hashpw(password, org.mindrot.jbcrypt.BCrypt.gensalt());
+                User user = new User(0, username, hashed, role, null);
+                boolean success = userController.addUser(user);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!");
+                    loadData();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm tài khoản thất bại!");
+                }
+            }
+        });
+        exportButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+            int userSelection = fileChooser.showSaveDialog(this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                if (!filePath.endsWith(".xlsx")) filePath += ".xlsx";
+                boolean success = userController.exportUsersToExcel(filePath);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Xuất file Excel thất bại!");
+                }
             }
         });
     }

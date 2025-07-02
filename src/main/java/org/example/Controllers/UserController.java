@@ -28,4 +28,12 @@ public class UserController {
     public boolean changePassword(int userId, String newPassword) {
         return userService.changePassword(userId, newPassword);
     }
+
+    public boolean addUser(User user) {
+        return userService.addUser(user);
+    }
+
+    public boolean exportUsersToExcel(String filePath) {
+        return userService.exportUsersToExcel(filePath);
+    }
 }

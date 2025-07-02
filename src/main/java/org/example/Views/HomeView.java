@@ -57,6 +57,7 @@ public class HomeView extends JFrame {
         JButton btnFood = createStyledButton("Quản Lý Thức Ăn", buttonFont, buttonColor, hoverColor);
 
         JButton btnLogout = createStyledButton("Đăng Xuất", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
+        JButton btnChangePassword = createStyledButton("Đổi Mật Khẩu", buttonFont, buttonColor, hoverColor);
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btnLogout.setForeground(Color.RED);
         buttonPanel.add(btnSale);
@@ -71,6 +72,10 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnPet);
         buttonPanel.add(btnRecord);
         buttonPanel.add(btnLogout);
+        // Chỉ hiển thị nút Đổi Mật Khẩu cho staff
+        if ("staff".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
+            buttonPanel.add(btnChangePassword);
+        }
 
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setBackground(Color.WHITE);
@@ -104,6 +109,11 @@ public class HomeView extends JFrame {
         btnLogout.addActionListener(e -> logout());
         btnStatic.addActionListener(e -> ViewManager.showStatics());
         btnFood.addActionListener(e -> ViewManager.showFood());
+        btnChangePassword.addActionListener(e -> {
+            int userId = Session.getInstance().getUser().getUserId();
+            String username = Session.getInstance().getUser().getUsername();
+            new org.example.Views.Auth.ChangePasswordDialog(this, userId, username).setVisible(true);
+        });
 
 
         getContentPane().setLayout(new BorderLayout());
