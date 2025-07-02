@@ -11,6 +11,7 @@ import org.example.Models.User;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,13 +20,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
 public class RecordLogView extends JFrame {
     private JTextField txtRecordId, txtPetId, txtDescription, txtVetName, txtSearch;
     private JComboBox<String> cbType, filterCombo;
     private JDateChooser dateChooser, nextAppointmentChooser;
     private JTable recordTable;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnEdit, btnDelete;
+    private JButton btnAdd, btnEdit, btnDelete, btnExportExcel;
     private RecordLogController recordLogController;
     private PetController petController;
     private Map<Integer, String> petNameMap = new HashMap<>();
@@ -97,10 +104,14 @@ public class RecordLogView extends JFrame {
         btnAdd = new JButton("Thêm");
         btnEdit = new JButton("Sửa");
         btnDelete = new JButton("Xóa");
+        btnExportExcel = new JButton("Export Excel");
+
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnEdit);
         buttonPanel.add(btnDelete);
+        buttonPanel.add(btnExportExcel);
+
         mainPanel.add(buttonPanel, gbc);
 
         add(mainPanel);
@@ -192,6 +203,8 @@ public class RecordLogView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Lỗi !");
             }
         });
+        btnExportExcel.addActionListener(e -> exportToExcel());
+
 
         recordTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -364,6 +377,55 @@ public class RecordLogView extends JFrame {
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+            }
+        }
+    }
+    private void exportToExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!filePath.endsWith(".xlsx")) {
+                filePath += ".xlsx";
+            }
+
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Medical Records");
+                String[] headers = {"Mã hồ sơ", "Mã thú cưng", "Tên thú cưng", "Loại", "Mô tả", "Bác sĩ", "Ngày khám", "Tái khám"};
+
+                Row headerRow = sheet.createRow(0);
+                for (int i = 0; i < headers.length; i++) {
+                    headerRow.createCell(i).setCellValue(headers[i]);
+                }
+
+                List<PetMedicalRecord> records = recordLogController.getRecordLogService();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                int rowNum = 1;
+
+                for (PetMedicalRecord r : records) {
+                    Row row = sheet.createRow(rowNum++);
+                    String petName = petNameMap.getOrDefault(r.getPetId(), "N/A");
+
+                    row.createCell(0).setCellValue(r.getRecordId());
+                    row.createCell(1).setCellValue(r.getPetId());
+                    row.createCell(2).setCellValue(petName);
+                    row.createCell(3).setCellValue(r.getType());
+                    row.createCell(4).setCellValue(r.getDescription());
+                    row.createCell(5).setCellValue(r.getVetName());
+                    row.createCell(6).setCellValue(sdf.format(r.getDate()));
+                    row.createCell(7).setCellValue(r.getNextAppointment() != null ? sdf.format(r.getNextAppointment()) : "");
+                }
+
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+
+                JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi ghi file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             }
         }
     }

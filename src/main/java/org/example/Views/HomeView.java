@@ -54,11 +54,15 @@ public class HomeView extends JFrame {
         JButton btnAccount = createStyledButton("Quản Lý Tài Khoản", buttonFont, buttonColor, hoverColor);
         JButton btnInvoices = createStyledButton("Hóa Đơn", buttonFont, buttonColor, hoverColor);
         JButton btnStatic = createStyledButton("Thống Kê", buttonFont, buttonColor, hoverColor);
+        JButton btnFood = createStyledButton("Quản Lý Thức Ăn", buttonFont, buttonColor, hoverColor);
+
         JButton btnLogout = createStyledButton("Đăng Xuất", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btnLogout.setForeground(Color.RED);
         buttonPanel.add(btnSale);
         buttonPanel.add(btnInvoices);
+        buttonPanel.add(btnFood);
+
         if ("admin".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
             buttonPanel.add(btnSupplier);
             buttonPanel.add(btnAccount);
@@ -99,6 +103,8 @@ public class HomeView extends JFrame {
         btnInvoices.addActionListener(e -> ViewManager.showInvoice());
         btnLogout.addActionListener(e -> logout());
         btnStatic.addActionListener(e -> ViewManager.showStatics());
+        btnFood.addActionListener(e -> ViewManager.showFood());
+
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(headerPanel, BorderLayout.NORTH);

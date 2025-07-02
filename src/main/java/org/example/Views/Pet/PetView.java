@@ -12,11 +12,15 @@ import org.mindrot.jbcrypt.BCrypt;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.Font;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PetView extends JFrame {
     private JTextField idField, nameField, breedField, ageField, priceField, searchField;
@@ -221,7 +225,9 @@ public class PetView extends JFrame {
         JButton deleteButton = new JButton("Xóa");
         JButton clearButton = new JButton("Clear");
         JButton showPetLog = new JButton("Trạng thái Pet");
-        for (JButton btn : new JButton[]{addButton, updateButton, deleteButton, clearButton, showPetLog}) {
+        JButton exportExcelButton = new JButton("Export Excel");
+
+        for (JButton btn : new JButton[]{addButton, updateButton, deleteButton, clearButton, showPetLog, exportExcelButton}) {
             btn.setFont(labelFont);
             btn.setPreferredSize(new Dimension(150, 35));
             buttonPanel.add(btn);
@@ -345,6 +351,9 @@ public class PetView extends JFrame {
             ViewManager.showPetLog();
         });
 
+        exportExcelButton.addActionListener(e -> exportToExcel());
+
+
         searchButton.addActionListener(e -> filterData());
     }
 
@@ -431,5 +440,50 @@ public class PetView extends JFrame {
         loadData();
         loadSuppliers();
         tableModel.fireTableDataChanged();
+    }
+    private void exportToExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!filePath.endsWith(".xlsx")) {
+                filePath += ".xlsx";
+            }
+
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Pets");
+                String[] headers = {"ID", "Tên", "Loài", "Giống", "Tuổi", "Giới tính", "Giá", "Trạng thái", "Nhà cung cấp"};
+
+                Row headerRow = sheet.createRow(0);
+                for (int i = 0; i < headers.length; i++) {
+                    headerRow.createCell(i).setCellValue(headers[i]);
+                }
+
+                int rowNum = 1;
+                for (Pet pet : allPets) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(pet.getPetId());
+                    row.createCell(1).setCellValue(pet.getName());
+                    row.createCell(2).setCellValue(pet.getSpecies());
+                    row.createCell(3).setCellValue(pet.getBreed());
+                    row.createCell(4).setCellValue(pet.getAge());
+                    row.createCell(5).setCellValue(pet.getGender());
+                    row.createCell(6).setCellValue(pet.getPrice().doubleValue());
+                    row.createCell(7).setCellValue(pet.getStatus());
+                    row.createCell(8).setCellValue(supplierNameMap.getOrDefault(pet.getSupplierId(), "N/A"));
+                }
+
+                try (FileOutputStream out = new FileOutputStream(filePath)) {
+                    workbook.write(out);
+                }
+
+                JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xuất file Excel: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
     }
 }
