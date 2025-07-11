@@ -1,5 +1,10 @@
 package org.example.Views.Pet;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.Controllers.PetLogController;
 import org.example.DTO.ComboItem;
 import org.example.Models.PetLog;
@@ -11,6 +16,8 @@ import org.example.Controllers.UserController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +34,7 @@ public class PetLogView extends JFrame {
     private JButton filterButton, addButton, updateButton, deleteButton;
     private Map<Integer, String> petNameMap = new HashMap<>();
     private Map<Integer, String> userNameMap = new HashMap<>();
+    private JButton exportExcelButton;
 
     public PetLogView() {
         petLogController = new PetLogController();
@@ -79,16 +87,20 @@ public class PetLogView extends JFrame {
         JScrollPane scrollPane = new JScrollPane(logTable);
 
         JPanel buttonPanel = new JPanel();
-        addButton = new JButton("Thêm log");
-        deleteButton = new JButton("Xóa log");
-        updateButton = new JButton("Sửa log");
+        addButton = new JButton("Thêm");
+        deleteButton = new JButton("Xoá");
+        updateButton = new JButton("Sửa");
+        exportExcelButton = new JButton("Xuất Excel");
+
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(exportExcelButton);
 
         addButton.addActionListener(e -> handleAddLog());
         updateButton.addActionListener(e -> handleUpdateLog());
         deleteButton.addActionListener(e-> handleDeleteLog());
+        exportExcelButton.addActionListener(e -> exportToExcel());
 
         add(filterPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -229,7 +241,7 @@ public class PetLogView extends JFrame {
         gbc.gridwidth = 2;
         panel.add(userCombo, gbc);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm Log", JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             PetLog log = new PetLog();
             log.setPetId(((ComboItem) petCombo.getSelectedItem()).getId());
@@ -243,7 +255,13 @@ public class PetLogView extends JFrame {
     }
 
     private void handleUpdateLog() {
+        int selectedRow = logTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một log để sửa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         int row = logTable.getSelectedRow();
+
         if (row >= 0) {
             int logId = (int) tableModel.getValueAt(row, 0);
             String petName = (String) tableModel.getValueAt(row, 1);
@@ -280,7 +298,7 @@ public class PetLogView extends JFrame {
             panel.add(new JLabel("User ID:"));
             panel.add(userIdField);
 
-            int result = JOptionPane.showConfirmDialog(this, panel, "Sửa Log", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(this, panel, "Sửa", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
                 PetLog log = new PetLog();
                 log.setLogId(logId);
@@ -305,7 +323,7 @@ public class PetLogView extends JFrame {
         int logId = (int) tableModel.getValueAt(selectedRow, 0);
         int confirm = JOptionPane.showConfirmDialog(
                 this,
-                "Bạn có chắc chắn muốn xóa log ID " + logId + " không?",
+                "Bạn có chắc chắn muốn xóa log này không?",
                 "Xác nhận xóa",
                 JOptionPane.YES_NO_OPTION
         );
@@ -332,5 +350,56 @@ public class PetLogView extends JFrame {
             }
         }
     }
+    private void exportToExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            if (!fileToSave.getName().endsWith(".xlsx")) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + ".xlsx");
+            }
+
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Danh sách nhà cung cấp");
+
+                // Tạo dòng tiêu đề
+                Row header = sheet.createRow(0);
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    Cell cell = header.createCell(i);
+                    cell.setCellValue(tableModel.getColumnName(i));
+                }
+
+                // Ghi dữ liệu
+                for (int row = 0; row < tableModel.getRowCount(); row++) {
+                    Row dataRow = sheet.createRow(row + 1);
+                    for (int col = 0; col < tableModel.getColumnCount(); col++) {
+                        Cell cell = dataRow.createCell(col);
+                        Object value = tableModel.getValueAt(row, col);
+                        cell.setCellValue(value != null ? value.toString() : "");
+                    }
+                }
+
+                // Lưu file
+                FileOutputStream fileOut = new FileOutputStream(fileToSave);
+                workbook.write(fileOut);
+                fileOut.close();
+
+                JOptionPane.showMessageDialog(this, "Xuất Excel thành công!");
+
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(fileToSave);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không thể mở file tự động. Vui lòng mở thủ công.");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Xuất Excel thất bại: " + ex.getMessage());
+            }
+        }
+    }
+
 
 }

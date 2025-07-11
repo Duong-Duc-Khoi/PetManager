@@ -55,6 +55,7 @@ public class HomeView extends JFrame {
         JButton btnInvoices = createStyledButton("Hóa Đơn", buttonFont, buttonColor, hoverColor);
         JButton btnStatic = createStyledButton("Thống Kê", buttonFont, buttonColor, hoverColor);
         JButton btnFood = createStyledButton("Quản Lý Thức Ăn", buttonFont, buttonColor, hoverColor);
+        JButton btnFoodCategory = createStyledButton("Danh Mục Thức Ăn", buttonFont, buttonColor, hoverColor);
 
         JButton btnLogout = createStyledButton("Đăng Xuất", buttonFont, new Color(255, 220, 220), new Color(255, 180, 180));
         JButton btnChangePassword = createStyledButton("Đổi Mật Khẩu", buttonFont, buttonColor, hoverColor);
@@ -63,6 +64,7 @@ public class HomeView extends JFrame {
         buttonPanel.add(btnSale);
         buttonPanel.add(btnInvoices);
         buttonPanel.add(btnFood);
+        buttonPanel.add(btnFoodCategory);
 
         if ("admin".equalsIgnoreCase(Session.getInstance().getUser().getRole())) {
             buttonPanel.add(btnSupplier);
@@ -109,6 +111,8 @@ public class HomeView extends JFrame {
         btnLogout.addActionListener(e -> logout());
         btnStatic.addActionListener(e -> ViewManager.showStatics());
         btnFood.addActionListener(e -> ViewManager.showFood());
+        btnFoodCategory.addActionListener(e -> ViewManager.showFoodCategory());
+
         btnChangePassword.addActionListener(e -> {
             int userId = Session.getInstance().getUser().getUserId();
             String username = Session.getInstance().getUser().getUsername();

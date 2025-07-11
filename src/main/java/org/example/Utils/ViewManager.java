@@ -3,6 +3,7 @@ package org.example.Utils;
 import org.example.Views.Auth.AccountView;
 import org.example.Views.Auth.LoginView;
 import org.example.Views.Auth.RegisterView;
+import org.example.Views.Food.FoodCategoryView;
 import org.example.Views.Pet.PetLogView;
 import org.example.Views.Pet.PetView;
 import org.example.Views.Pet.RecordLogView;
@@ -25,6 +26,7 @@ public class ViewManager {
     private static InvoicesView invoiceView;
     private static StatisticsView statisticsView;
     private static FoodView foodView;
+    private static FoodCategoryView foodCategoryView;
 
 
     public static void showRegisterView() {
@@ -118,6 +120,14 @@ public class ViewManager {
         foodView.setVisible(true);
         foodView.toFront();
     }
+    public static void showFoodCategory() {
+        UIManagers.applyGlobalFont();
+        if (foodCategoryView == null) {
+            foodCategoryView = new FoodCategoryView();
+        }
+        foodCategoryView.setVisible(true);
+        foodCategoryView.toFront();
+    }
 
 
 
@@ -132,6 +142,7 @@ public class ViewManager {
         if (recordLogView != null) recordLogView.dispose();
         if (invoiceView != null) invoiceView.dispose();
         if (foodView != null) foodView.dispose();
+        if (foodCategoryView != null) foodCategoryView.dispose();
 
     }
 }

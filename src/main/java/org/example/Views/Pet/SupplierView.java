@@ -1,14 +1,22 @@
 package org.example.Views.Pet;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.Controllers.SupplierController;
 import org.example.Models.Session;
 import org.example.Models.Supplier;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.management.openmbean.CompositeData;
 import javax.swing.*;
 
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 public class SupplierView extends JFrame {
@@ -16,6 +24,7 @@ public class SupplierView extends JFrame {
     private JTable supplierTable;
     private DefaultTableModel tableModel;
     private SupplierController supplierController = new SupplierController();
+    private SupplierController controller;
 
     public SupplierView() {
         setTitle("Quản lý nhà cung cấp");
@@ -23,6 +32,7 @@ public class SupplierView extends JFrame {
         setLocationRelativeTo(null);
         initUI();
         loadSupplier();
+        controller = new SupplierController();
 
     }
 
@@ -36,6 +46,17 @@ public class SupplierView extends JFrame {
 
         nameField = new JTextField(20);
         phoneField = new JTextField(20);
+        phoneField = new JTextField(20);
+        phoneField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) || phoneField.getText().length() >= 10) {
+                    e.consume();
+                }
+            }
+        });
+
         emailField = new JTextField(20);
         addressField = new JTextField(20);
 
@@ -73,11 +94,15 @@ public class SupplierView extends JFrame {
         JButton updateButton = new JButton("Sửa");
         JButton deleteButton = new JButton("Xoá");
         JButton resetButton = new JButton("Reset");
+        JButton exportExcelButton = new JButton("Xuất Excel");
+
+
 
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(resetButton);
+        buttonPanel.add(exportExcelButton);
 
         String[] columnNames = {"ID", "Tên", "SĐT", "Địa chỉ", "Email"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -107,6 +132,7 @@ public class SupplierView extends JFrame {
         updateButton.addActionListener(e -> onUpdateSupplier());
         deleteButton.addActionListener(e -> onDeleteSupplier());
         resetButton.addActionListener(e -> Refesh());
+        exportExcelButton.addActionListener(e -> onExportExcel());
     }
 
 
@@ -178,33 +204,24 @@ public class SupplierView extends JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn nhà cung cấp để xoá.");
             return;
         }
+
         int id = (int) tableModel.getValueAt(selectedRow, 0);
 
-        JPasswordField passwordField = new JPasswordField();
-        passwordField.setEchoChar('*');
-
-        int passConfirm = JOptionPane.showConfirmDialog(
+        int confirm = JOptionPane.showConfirmDialog(
                 this,
-                passwordField,
-                "Nhập mật khẩu để xác nhận xoá",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
+                "Bạn có chắc chắn muốn xoá nhà cung cấp này?",
+                "Xác nhận xoá",
+                JOptionPane.YES_NO_OPTION
         );
 
-        if (passConfirm == JOptionPane.OK_OPTION) {
-            String enteredPassword = new String(passwordField.getPassword());
-            String passHased = Session.getInstance().getUser().getPassword();
-            if (BCrypt.checkpw(enteredPassword, passHased)) {
-                boolean success = supplierController.deleteSupplier(id);
-                if (success) {
-                    loadSupplier();
-                    Refesh();
-                    JOptionPane.showMessageDialog(this, "Xoá thành công.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xoá thất bại.");
-                }
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = supplierController.deleteSupplier(id);
+            if (success) {
+                loadSupplier();
+                Refesh();
+                JOptionPane.showMessageDialog(this, "Xoá thành công.");
             } else {
-                JOptionPane.showMessageDialog(this, "Mật khẩu không đúng. Không thể xoá.");
+                JOptionPane.showMessageDialog(this, "Xoá thất bại.");
             }
         }
     }
@@ -228,5 +245,60 @@ public class SupplierView extends JFrame {
         addressField.setText("");
         tableModel.fireTableDataChanged();
     }
+    private void onExportExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int result = fileChooser.showSaveDialog(this);
+
+        if (result != JFileChooser.APPROVE_OPTION) return;
+
+        String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+        if (!filePath.endsWith(".xlsx")) {
+            filePath += ".xlsx";
+        }
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Suppliers");
+
+            // Header
+            String[] headers = {"ID", "Tên nhà cung cấp", "SĐT", "Email", "Địa chỉ"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+            // Dữ liệu
+
+            List<Supplier> suppliers = controller.getAllSuppliers();
+            int rowIdx = 1;
+            for (Supplier s : suppliers) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(s.getSupplierId());
+                row.createCell(1).setCellValue(s.getName());
+                row.createCell(2).setCellValue(s.getPhone());
+                row.createCell(3).setCellValue(s.getEmail());
+                row.createCell(4).setCellValue(s.getAddress());
+            }
+
+            // Ghi file
+            try (FileOutputStream out = new FileOutputStream(filePath)) {
+                workbook.write(out);
+                JOptionPane.showMessageDialog(this, "Xuất Excel thành công!");
+
+                File excelFile = new File(filePath);
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(excelFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không thể mở file Excel tự động.");
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi xuất Excel: " + ex.getMessage());
+        }
+    }
+
+
 }
 
